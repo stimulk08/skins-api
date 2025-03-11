@@ -22,21 +22,23 @@ export abstract class HttpClient {
     });
 
     if (!response.ok) {
-      const errorResponse = await response.json();
-      throw new Error(`Error: ${errorResponse.message || response.statusText}`);
+      const errorResponse = await response?.json();
+      throw new Error(
+        `Error: ${errorResponse?.message || response?.statusText}`,
+      );
     }
 
     return response.json() as Promise<U>;
   }
 
-  public async get<U>(
+  protected async get<U>(
     endpoint: string,
     headers?: Record<string, string>,
   ): Promise<U> {
     return this.request<U>('GET', endpoint, undefined, headers);
   }
 
-  public async post<U>(
+  protected async post<U>(
     endpoint: string,
     body: any,
     headers?: Record<string, string>,
@@ -44,7 +46,7 @@ export abstract class HttpClient {
     return this.request<U>('POST', endpoint, body, headers);
   }
 
-  public async put<U>(
+  protected async put<U>(
     endpoint: string,
     body: any,
     headers?: Record<string, string>,
@@ -52,7 +54,7 @@ export abstract class HttpClient {
     return this.request<U>('PUT', endpoint, body, headers);
   }
 
-  public async delete<U>(
+  protected async delete<U>(
     endpoint: string,
     headers?: Record<string, string>,
   ): Promise<U> {

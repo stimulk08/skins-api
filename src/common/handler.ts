@@ -6,6 +6,8 @@ export class RouteHandler {
   constructor(
     public handler: Handler,
     public method: HttpMethod,
+    public body?: any,
+    public response?: any,
     public route: string = '',
   ) {}
 }

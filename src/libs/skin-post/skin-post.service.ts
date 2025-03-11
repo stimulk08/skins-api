@@ -1,4 +1,4 @@
-import { SkinItem } from '@apps/skins/dto/response/skin.response';
+import { ProductItem } from '@apps/products/dto/response/product.response';
 import { configService } from '@libs/config/config.service';
 import { HttpClient } from '@libs/http/http-base.service';
 
@@ -7,8 +7,18 @@ export class SkinPostClient extends HttpClient {
     super(baseUrl);
   }
 
-  async findItems(): Promise<SkinItem[]> {
-    return this.get<SkinItem[]>('/items');
+  async findItems(tradable: boolean = false): Promise<ProductItem[] | null> {
+    // Создаем базовый URL
+    const params = new URLSearchParams({
+      tradable: (tradable ? 1 : 0).toString(),
+    });
+    // Выполняем GET-запрос
+    try {
+      return await this.get<ProductItem[]>(`/items?${params.toString()}`);
+    } catch (error) {
+      console.log('Error fetching items');
+      return null;
+    }
   }
 }
 

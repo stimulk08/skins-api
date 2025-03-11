@@ -33,6 +33,7 @@
       "@src/*": ["./*"]
     }
   },
+  "types": ["bun-types"],
   "include": ["src/**/*"], // Включать все файлы в папке src
   "exclude": ["node_modules"] // Исключить папку node_modules
 }

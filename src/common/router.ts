@@ -15,16 +15,26 @@ export class Router {
 
       switch (handler.method) {
         case HttpMethod.GET:
-          app.get(fullPath, handler.handler);
+          app.get(fullPath, handler.handler, {
+            response: handler.response,
+          });
           break;
         case HttpMethod.POST:
-          app.post(fullPath, handler.handler);
+          app.post(fullPath, handler.handler, {
+            body: handler.body,
+            response: handler.response,
+          });
           break;
         case HttpMethod.PUT:
-          app.put(fullPath, handler.handler);
+          app.put(fullPath, handler.handler, {
+            body: handler.body,
+            response: handler.response,
+          });
           break;
         case HttpMethod.DELETE:
-          app.delete(fullPath, handler.handler);
+          app.delete(fullPath, handler.handler, {
+            response: handler.response,
+          });
           break;
         default:
           console.warn(`Unsupported HTTP method: ${handler.method}`);
