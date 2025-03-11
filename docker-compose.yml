@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - '${PORT}:${PORT}' # Порт приложения
+    environment:
+      - PORT=${PORT} # Порт, на котором работает приложение
+      - REDIS_URL=redis://redis:6379 # Ссылка на Redis
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/skins_db # Ссылка на PostgreSQL
+    depends_on:
+      - redis
+      - postgres
+    volumes:
+      - .:/app # Монтируем текущую директорию в контейнер
+    networks:
+      - skins-network
+
+  redis:
+    image: redis:alpine
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis-data:/data
+    networks:
+      - skins-network
+
+  postgres:
+    image: postgres:alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: skins_db
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - skins-network
+
+volumes:
+  redis-data:
+  postgres-data:
+
+networks:
+  skins-network:
+    driver: bridge

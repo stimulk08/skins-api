@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "target": "ES2020", // Современный стандарт JavaScript
+    "module": "ESNext", // Используем ES-модули
+    "moduleResolution": "Bundler", // Современный режим разрешения модулей
+    "outDir": "./dist", // Папка для скомпилированных файлов
+    "rootDir": "./src", // Корневая папка с исходным кодом
+    "baseUrl": "./src", // Базовый путь для разрешения модулей
+    "sourceMap": true, // Генерация source maps
+    "incremental": true, // Инкрементальная компиляция
+    "declaration": true, // Генерация .d.ts файлов
+    "skipLibCheck": true, // Пропускать проверку типов в библиотеках
+    "removeComments": true, // Удалять комментарии при компиляции
+    "emitDecoratorMetadata": true, // Поддержка декораторов и метаданных
+    "experimentalDecorators": true, // Включить экспериментальные декораторы
+    "allowSyntheticDefaultImports": true, // Разрешить синтетические default-импорты
+    "resolveJsonModule": true, // Разрешить импорт JSON-файлов
+    "strict": true, // Включить строгий режим TypeScript
+    "noImplicitAny": true, // Запретить неявное использование `any`
+    "strictNullChecks": true, // Строгая проверка на null/undefined
+    "strictFunctionTypes": true, // Строгая проверка типов функций
+    "strictBindCallApply": true, // Строгая проверка bind/call/apply
+    "strictPropertyInitialization": true, // Строгая проверка инициализации свойств классов
+    "noImplicitThis": true, // Запретить неявное использование `this`
+    "alwaysStrict": true, // Всегда использовать строгий режим JavaScript
+    "paths": {
+      // Алиасы для путей
+      "@core/*": ["core/*"],
+      "@libs/*": ["libs/*"],
+      "@common/*": ["common/*"],
+      "@apps/*": ["apps/*"],
+      "@test/*": ["test/*"],
+      "@src/*": ["./*"]
+    }
+  },
+  "include": ["src/**/*"], // Включать все файлы в папке src
+  "exclude": ["node_modules"] // Исключить папку node_modules
+}
