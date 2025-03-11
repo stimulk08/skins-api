@@ -7,6 +7,7 @@ export class RouteHandler {
     public handler: Handler,
     public method: HttpMethod,
     public body?: any,
+    public params?: any,
     public response?: any,
     public route: string = '',
   ) {}

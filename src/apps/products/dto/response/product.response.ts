@@ -121,10 +121,10 @@ export class ProductItem {
   }
 }
 
-export class ProductResponse {
+export class ProductModel {
   name: string;
-  tradeablePrice: number;
-  untradeablePrice: number;
+  tradableprice: number;
+  untradableprice: number;
   quantity: number;
 
   constructor(data: {
@@ -134,17 +134,17 @@ export class ProductResponse {
     quantity: number;
   }) {
     this.name = data.name;
-    this.tradeablePrice = data.tradeablePrice;
-    this.untradeablePrice = data.untradeablePrice;
+    this.tradableprice = data.tradeablePrice;
+    this.untradableprice = data.untradeablePrice;
     this.quantity = data.quantity;
   }
 }
 
 export const ProductResponseSchema = t.Array(
-  t.Object(<Record<keyof ProductResponse, any>>{
+  t.Object(<Record<keyof ProductModel, any>>{
     name: t.String(),
-    tradeablePrice: t.Number(),
-    untradeablePrice: t.Number(),
+    tradableprice: t.Number(),
+    untradableprice: t.Number(),
     quantity: t.Number(),
     createdAt: t.Number(),
   }),

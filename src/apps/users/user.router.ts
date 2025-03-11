@@ -1,5 +1,6 @@
 import { t } from 'elysia';
 
+import { purchaseService } from '@apps/purchase/purchase.service';
 import { userService } from '@apps/users/user.service';
 import { HttpMethod } from '@common/http-method';
 import { Router } from '@common/router';
@@ -27,6 +28,30 @@ export class UsersRouter extends Router {
           return { data };
         },
         route: '',
+      },
+      {
+        method: HttpMethod.GET,
+        handler: async ({ set, params: { id } }) => {
+          set.headers['Content-Type'] = 'application/json';
+          const data = await userService.findById(id);
+          return { data };
+        },
+        params: t.Object({
+          id: t.String(),
+        }),
+        route: '/:id',
+      },
+      {
+        method: HttpMethod.GET,
+        handler: async ({ set, params: { id } }) => {
+          set.headers['Content-Type'] = 'application/json';
+          const data = await purchaseService.getUserPurchases(id);
+          return { data };
+        },
+        params: t.Object({
+          id: t.String(),
+        }),
+        route: '/:id/purchases',
       },
     ]);
   }

@@ -30,6 +30,13 @@ export class UserRepository {
     const response = await this.sql<UserModel[]>`SELECT * FROM users`;
     return response;
   }
+
+  async findById(userId: string): Promise<UserModel | null> {
+    const response = await this.sql<UserModel[]>`
+    SELECT * FROM users WHERE id = ${userId}`;
+
+    return response?.[0] || null;
+  }
 }
 
 export const userRepository = new UserRepository(sqlConnection);

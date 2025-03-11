@@ -17,23 +17,27 @@ export class Router {
         case HttpMethod.GET:
           app.get(fullPath, handler.handler, {
             response: handler.response,
+            params: handler.params,
           });
           break;
         case HttpMethod.POST:
           app.post(fullPath, handler.handler, {
             body: handler.body,
             response: handler.response,
+            params: handler.params,
           });
           break;
         case HttpMethod.PUT:
           app.put(fullPath, handler.handler, {
             body: handler.body,
             response: handler.response,
+            params: handler.params,
           });
           break;
         case HttpMethod.DELETE:
           app.delete(fullPath, handler.handler, {
             response: handler.response,
+            params: handler.params,
           });
           break;
         default:
