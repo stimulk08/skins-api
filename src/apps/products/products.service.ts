@@ -32,17 +32,17 @@ export class ProductService {
     );
   }
 
-  async getSkins(): Promise<ProductResponse[]> {
-    const cachedSkins =
+  async getProducts(): Promise<ProductResponse[]> {
+    const cachedProducts =
       await this.redisService.get<ProductResponse[]>(PRODUCTS_REDIS_KEY);
 
-    if (cachedSkins) {
-      return cachedSkins;
+    if (cachedProducts) {
+      return cachedProducts;
     }
-    const skins = await this.skinPostClient.findItems();
-    if (!skins?.length) return [];
+    const products = await this.skinPostClient.findItems();
+    if (!products?.length) return [];
 
-    const mappedProducts: ProductResponse[] = skins.map(skin => {
+    const mappedProducts: ProductResponse[] = products.map(skin => {
       return {
         name: skin.market_hash_name,
         tradeablePrice: skin.min_price,

@@ -9,7 +9,7 @@ export class ProductsRouter extends Router {
         method: HttpMethod.GET,
         handler: async ({ set }) => {
           set.headers['Content-Type'] = 'application/json';
-          const data = await productService.getSkins();
+          const data = await productService.getProducts();
           return { data };
         },
         route: '',
