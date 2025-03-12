@@ -6,7 +6,8 @@ import {
   ProductRepository,
   skinRepository,
 } from '@apps/products/database/produtcs.repository';
-import { ProductModel } from '@apps/products/dto/response/product.response';
+import { ProductResponse } from '@apps/products/dto/response/product.response';
+import { ProductMapper } from '@apps/products/mappers/product.mapper';
 import { RedisService, redisService } from '@libs/redis/redis.service';
 import {
   SkinPostClient,
@@ -32,32 +33,31 @@ export class ProductService {
     );
   }
 
-  async getProducts(): Promise<ProductModel[]> {
+  async loadProducts(): Promise<ProductResponse[]> {
+    const skinPostProducts = await this.skinPostClient.findItems();
+    if (!skinPostProducts) return [];
+    const products = await this.productsRepository.createMany(
+      ProductMapper.mapSkinPostItemToDtoMany(skinPostProducts),
+    );
+    return ProductMapper.mapModels(products);
+  }
+
+  async getProducts(): Promise<ProductResponse[]> {
     const cachedProducts =
-      await this.redisService.get<ProductModel[]>(PRODUCTS_REDIS_KEY);
+      await this.redisService.get<ProductResponse[]>(PRODUCTS_REDIS_KEY);
 
     if (cachedProducts) {
       return cachedProducts;
     }
-    const products = await this.skinPostClient.findItems();
-    if (!products?.length) return [];
-
-    const mappedProducts: ProductModel[] = products.map(skin => {
-      return {
-        name: skin.market_hash_name,
-        tradableprice: skin.min_price,
-        untradableprice: skin.suggested_price,
-        quantity: skin.quantity,
-      };
-    });
+    const products = await this.loadProducts();
 
     await this.redisService.set(
       PRODUCTS_REDIS_KEY,
-      JSON.stringify(mappedProducts),
+      JSON.stringify(products),
       PRODUCTS_REDIS_TTL,
     );
 
-    return mappedProducts;
+    return products;
   }
 }
 

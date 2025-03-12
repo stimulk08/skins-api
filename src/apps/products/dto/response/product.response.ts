@@ -1,7 +1,7 @@
 /**
  * Класс, представляющий информацию о предмете на рынке SkinPost.
  */
-export class ProductItem {
+export class ProductSkinPostItem {
   /**
    * Название предмета на рынке.
    * @type {string}
@@ -120,6 +120,7 @@ export class ProductItem {
 }
 
 export class ProductResponse {
+  id?: string;
   name: string;
   tradablePrice: number;
   untradablePrice: number;
@@ -127,12 +128,14 @@ export class ProductResponse {
   quantity: number;
 
   constructor(data: {
+    id: string;
     name: string;
     tradablePrice: number;
     untradablePrice: number;
     createdAt: Date;
     quantity: number;
   }) {
+    this.id = data.id;
     this.name = data.name;
     this.tradablePrice = data.tradablePrice;
     this.untradablePrice = data.untradablePrice;
