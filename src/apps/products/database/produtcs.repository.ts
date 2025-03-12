@@ -42,6 +42,10 @@ export class ProductRepository {
   async createMany(data: CreateProductModelDto[]): Promise<ProductModel[]> {
     return Promise.all(data.map(dto => this.create(dto)));
   }
+
+  async findAll(): Promise<ProductModel[]> {
+    return this.sql<ProductModel[]>`SELECT * FROM products`;
+  }
 }
 
 export const skinRepository = new ProductRepository(sqlConnection);

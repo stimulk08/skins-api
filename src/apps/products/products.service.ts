@@ -42,6 +42,11 @@ export class ProductService {
     return ProductMapper.mapModels(products);
   }
 
+  async getSavedProducts(): Promise<ProductResponse[]> {
+    const products = await this.productsRepository.findAll();
+    return ProductMapper.mapModels(products);
+  }
+
   async getProducts(): Promise<ProductResponse[]> {
     const cachedProducts =
       await this.redisService.get<ProductResponse[]>(PRODUCTS_REDIS_KEY);
