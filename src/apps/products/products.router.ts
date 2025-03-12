@@ -4,7 +4,7 @@ import { Router } from '@common/router';
 
 export class ProductsRouter extends Router {
   constructor() {
-    super('/products', [
+    super('/products', 'Продукты', [
       {
         method: HttpMethod.GET,
         handler: async ({ set }) => {

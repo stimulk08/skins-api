@@ -4,10 +4,11 @@ import { purchaseService } from '@apps/purchase/purchase.service';
 import { userService } from '@apps/users/user.service';
 import { HttpMethod } from '@common/http-method';
 import { Router } from '@common/router';
+import { UUID_PATTERN } from '@common/uuid-pattern';
 
 export class UsersRouter extends Router {
   constructor() {
-    super('/users', [
+    super('/users', 'Пользователи', [
       {
         method: HttpMethod.POST,
         handler: async ({ set, body: { username } }) => {
@@ -37,7 +38,10 @@ export class UsersRouter extends Router {
           return { data };
         },
         params: t.Object({
-          id: t.String(),
+          id: t.String({
+            pattern: UUID_PATTERN,
+            error: 'Неверный UUID',
+          }),
         }),
         route: '/:id',
       },
@@ -49,7 +53,11 @@ export class UsersRouter extends Router {
           return { data };
         },
         params: t.Object({
-          id: t.String(),
+          id: t.String({
+            pattern: UUID_PATTERN,
+            error: 'Неверный UUID',
+            examples: ['3e8e6a3a-3e8e-3e8e-3e8e-3e8e3e8e3e8e'],
+          }),
         }),
         route: '/:id/purchases',
       },

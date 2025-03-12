@@ -4,10 +4,11 @@ import { purchaseService } from '@apps/purchase/purchase.service';
 import { userService } from '@apps/users/user.service';
 import { HttpMethod } from '@common/http-method';
 import { Router } from '@common/router';
+import { UUID_PATTERN } from '@common/uuid-pattern';
 
 export class PurchaseRouter extends Router {
   constructor() {
-    super('/purchases', [
+    super('/purchases', 'Покупки', [
       {
         method: HttpMethod.POST,
         handler: async ({ set, body: { userId, productId, quantity } }) => {
@@ -20,8 +21,14 @@ export class PurchaseRouter extends Router {
           return { data };
         },
         body: t.Object({
-          userId: t.String(),
-          productId: t.String(),
+          userId: t.String({
+            pattern: UUID_PATTERN,
+            error: 'Неверный UUID',
+          }),
+          productId: t.String({
+            pattern: UUID_PATTERN,
+            error: 'Неверный UUID',
+          }),
           quantity: t.Number(),
         }),
         route: '',

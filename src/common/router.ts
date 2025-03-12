@@ -6,6 +6,7 @@ import { HttpMethod } from '@common/http-method';
 export class Router {
   constructor(
     readonly basePath: string,
+    readonly tag: string,
     readonly handlers: RouteHandler[],
   ) {}
 
@@ -18,6 +19,7 @@ export class Router {
           app.get(fullPath, handler.handler, {
             response: handler.response,
             params: handler.params,
+            tags: [this.tag],
           });
           break;
         case HttpMethod.POST:
@@ -25,6 +27,7 @@ export class Router {
             body: handler.body,
             response: handler.response,
             params: handler.params,
+            tags: [this.tag],
           });
           break;
         case HttpMethod.PUT:
@@ -32,12 +35,14 @@ export class Router {
             body: handler.body,
             response: handler.response,
             params: handler.params,
+            tags: [this.tag],
           });
           break;
         case HttpMethod.DELETE:
           app.delete(fullPath, handler.handler, {
             response: handler.response,
             params: handler.params,
+            tags: [this.tag],
           });
           break;
         default:
