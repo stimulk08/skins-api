@@ -14,6 +14,15 @@ export class ProductsRouter extends Router {
         },
         route: '',
       },
+      {
+        method: HttpMethod.GET,
+        handler: async ({ set }) => {
+          set.headers['Content-Type'] = 'application/json';
+          const data = await productService.loadProducts();
+          return { data };
+        },
+        route: '/upload',
+      },
     ]);
   }
 }

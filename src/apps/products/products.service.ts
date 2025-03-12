@@ -49,15 +49,17 @@ export class ProductService {
     if (cachedProducts) {
       return cachedProducts;
     }
-    const products = await this.loadProducts();
+    const skinPostProducts = await this.skinPostClient.findItems();
+    if (!skinPostProducts) return [];
+    const productsMapped = ProductMapper.mapSkinPostArray(skinPostProducts);
 
     await this.redisService.set(
       PRODUCTS_REDIS_KEY,
-      JSON.stringify(products),
+      JSON.stringify(productsMapped),
       PRODUCTS_REDIS_TTL,
     );
 
-    return products;
+    return productsMapped;
   }
 }
 
