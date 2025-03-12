@@ -10,7 +10,8 @@ async function bootstrap(): Promise<void> {
   const app = new Elysia();
   const swaggerPrefix = '/api/swagger';
 
-  initRouters(app)
+  app
+    .use(initRouters)
     .use(
       swagger({
         path: swaggerPrefix, // endpoint which swagger will appear on

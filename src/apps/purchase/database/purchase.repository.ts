@@ -1,8 +1,11 @@
 import postgres from 'postgres';
 
-import { ProductModel } from '@apps/products/dto/response/product.response';
+import { ProductModel } from '@apps/products/database/product.model';
+import { ProductResponse } from '@apps/products/dto/response/product.response';
 import { PurchaseModel } from '@apps/purchase/database/purchase.model';
 import { UserModel } from '@apps/users/database/user.model';
+import { UserResponse } from '@apps/users/dto/response/user.response';
+import { UserMapper } from '@apps/users/mappers/user.mapper';
 import { sql as sqlConnection } from '@libs/postgres/pg-connection';
 
 export class PurchaseRepository {
@@ -22,6 +25,85 @@ export class PurchaseRepository {
     `;
   }
 
+  private async updateUserBalance(
+    sql: postgres.TransactionSql,
+    userId: string,
+    balance: number,
+  ): Promise<void> {
+    await sql`
+        UPDATE users
+        SET balance = ${balance}
+        WHERE id = ${userId}
+      `;
+  }
+
+  private async updateProductQuantity(
+    sql: postgres.TransactionSql,
+    productId: string,
+    quantity: number,
+  ): Promise<void> {
+    await sql`
+        UPDATE products
+        SET quantity = ${quantity}
+        WHERE id = ${productId}
+      `;
+  }
+
+  private async createPurchase(
+    sql: postgres.TransactionSql,
+    productId: string,
+    userId: string,
+    quantity: number,
+  ): Promise<PurchaseModel> {
+    const createPurchaseResponse = await sql<PurchaseModel[]>`
+        INSERT INTO purchases (user_id, product_id, quantity)
+        VALUES (${userId}, ${productId}, ${quantity})
+        RETURNING *
+      `;
+
+    return createPurchaseResponse?.[0];
+  }
+
+  private async getUserOrFail(
+    sql: postgres.TransactionSql,
+    id: string,
+  ): Promise<UserResponse | never> {
+    const userResponse = await sql<
+      UserModel[]
+    >`SELECT balance FROM users WHERE id = ${id} FOR UPDATE`;
+
+    const user = userResponse?.[0];
+    if (!user) {
+      throw new Error('Пользователь не найден');
+    }
+
+    return UserMapper.mapModel(user);
+  }
+
+  private async getProductOrFail(
+    sql: postgres.TransactionSql,
+    id: string,
+  ): Promise<ProductResponse | never> {
+    const productResult = await sql<
+      ProductModel[]
+    >`SELECT untradable_price, tradable_price, quantity, created_at FROM products WHERE id = ${id} FOR UPDATE`;
+
+    const product = productResult?.[0];
+    if (!product) {
+      throw new Error('Продукт не найден');
+    }
+
+    const tradablePrice = Number(product.tradable_price);
+    const untradablePrice = Number(product.untradable_price);
+    const quantity = Number(product.quantity);
+
+    if (Number.isNaN(tradablePrice) || tradablePrice <= 0 || quantity <= 0) {
+      throw new Error('Продукт не торгуется');
+    }
+
+    return { ...product, tradablePrice, untradablePrice, quantity };
+  }
+
   async purchaseProduct(
     userId: string,
     productId: string,
@@ -31,37 +113,13 @@ export class PurchaseRepository {
     // Начинаем транзакцию
     await this.sql.begin(async sql => {
       // 1. Получаем данные пользователя и продукта
-      const [userResponse, productResponse] = await Promise.all([
-        sql<
-          UserModel[]
-        >`SELECT balance FROM users WHERE id = ${userId} FOR UPDATE`,
-        sql<
-          ProductModel[]
-        >`SELECT untradablePrice, tradablePrice, quantity FROM products WHERE id = ${productId} FOR UPDATE`,
+      const [user, product] = await Promise.all([
+        this.getUserOrFail(sql, userId),
+        this.getProductOrFail(sql, productId),
       ]);
 
-      const user = userResponse?.[0];
-      const product = productResponse?.[0];
-
-      if (!user) {
-        throw new Error('Пользователь не найден');
-      }
-      if (!product) {
-        throw new Error('Продукт не найден');
-      }
-
-      product.tradableprice = Number(product.tradableprice);
-      product.untradableprice = Number(product.untradableprice);
-      product.quantity = Number(product.quantity);
-
-      user.balance = Number(user.balance);
-
-      if (Number.isNaN(product.tradableprice) || product.tradableprice <= 0) {
-        throw new Error('Продукт не торгуется');
-      }
-
       // 2. Проверяем, достаточно ли баланса у пользователя
-      const totalCost = product.tradableprice * quantity;
+      const totalCost = product.tradablePrice * quantity;
       if (user.balance < totalCost) {
         throw new Error('Недостаточно средств на балансе');
       }
@@ -72,27 +130,17 @@ export class PurchaseRepository {
       }
 
       // 4. Списание стоимости товара с баланса пользователя
-      await sql`
-        UPDATE users
-        SET balance = balance - ${totalCost}
-        WHERE id = ${userId}
-      `;
+      await this.updateUserBalance(sql, userId, user.balance - totalCost);
 
       // 5. Уменьшение количества товара на складе
-      await sql`
-        UPDATE products
-        SET quantity = ${product.quantity - quantity}
-        WHERE id = ${productId}
-      `;
+      await this.updateProductQuantity(
+        sql,
+        productId,
+        product.quantity - quantity,
+      );
 
       // 6. Создание записи о покупке
-      const createPurchaseResponse = await sql<PurchaseModel[]>`
-        INSERT INTO purchases (user_id, product_id, quantity)
-        VALUES (${userId}, ${productId}, ${quantity})
-        RETURNING *
-      `;
-
-      purchase = createPurchaseResponse?.[0];
+      purchase = await this.createPurchase(sql, productId, userId, quantity);
     });
     return purchase;
   }

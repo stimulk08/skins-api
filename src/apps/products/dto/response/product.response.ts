@@ -1,5 +1,3 @@
-import { t } from 'elysia';
-
 /**
  * Класс, представляющий информацию о предмете на рынке SkinPost.
  */
@@ -121,31 +119,24 @@ export class ProductItem {
   }
 }
 
-export class ProductModel {
+export class ProductResponse {
   name: string;
-  tradableprice: number;
-  untradableprice: number;
+  tradablePrice: number;
+  untradablePrice: number;
+  createdAt: Date;
   quantity: number;
 
   constructor(data: {
     name: string;
-    tradeablePrice: number;
-    untradeablePrice: number;
+    tradablePrice: number;
+    untradablePrice: number;
+    createdAt: Date;
     quantity: number;
   }) {
     this.name = data.name;
-    this.tradableprice = data.tradeablePrice;
-    this.untradableprice = data.untradeablePrice;
+    this.tradablePrice = data.tradablePrice;
+    this.untradablePrice = data.untradablePrice;
+    this.createdAt = data.createdAt;
     this.quantity = data.quantity;
   }
 }
-
-export const ProductResponseSchema = t.Array(
-  t.Object(<Record<keyof ProductModel, any>>{
-    name: t.String(),
-    tradableprice: t.Number(),
-    untradableprice: t.Number(),
-    quantity: t.Number(),
-    createdAt: t.Number(),
-  }),
-);

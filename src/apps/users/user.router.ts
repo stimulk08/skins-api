@@ -13,13 +13,37 @@ export class UsersRouter extends Router {
         method: HttpMethod.POST,
         handler: async ({ set, body: { username } }) => {
           set.headers['Content-Type'] = 'application/json';
-          const data = await userService.create(username);
-          return { data };
+          const { status, errorMessage, data, success } =
+            await userService.create(username);
+          set.status = status;
+          if (!success) {
+            return { status, errorMessage };
+          }
+          return data;
         },
         body: t.Object({
-          username: t.String(),
+          username: t.String({ minLength: 5 }),
         }),
         route: '',
+      },
+      {
+        method: HttpMethod.PATCH,
+        handler: async ({ set, body: { amount }, params: { id } }) => {
+          set.headers['Content-Type'] = 'application/json';
+          const data = await userService.increaseBalance(id, amount);
+          return { data };
+        },
+        params: t.Object({
+          id: t.String({
+            pattern: UUID_PATTERN,
+            error: 'Неверный UUID',
+            examples: ['3e8e6a3a-3e8e-3e8e-3e8e-3e8e3e8e3e8e'],
+          }),
+        }),
+        body: t.Object({
+          amount: t.Number(),
+        }),
+        route: '/:id/balance',
       },
       {
         method: HttpMethod.GET,

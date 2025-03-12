@@ -13,12 +13,13 @@ export class PurchaseRouter extends Router {
         method: HttpMethod.POST,
         handler: async ({ set, body: { userId, productId, quantity } }) => {
           set.headers['Content-Type'] = 'application/json';
-          const data = await purchaseService.create(
-            productId,
-            quantity,
-            userId,
-          );
-          return { data };
+          const { data, status, success, errorMessage } =
+            await purchaseService.create(productId, quantity, userId);
+          set.status = status;
+          if (!success) {
+            return { status, errorMessage };
+          }
+          return data;
         },
         body: t.Object({
           userId: t.String({

@@ -16,10 +16,10 @@ export class ProductRepository {
     CREATE TABLE IF NOT EXISTS ${this.sql(this.tableName)} (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       name TEXT NOT NULL,
-      tradablePrice NUMERIC(10, 2),
-      untradablePrice NUMERIC(10, 2) NOT NULL,
+      tradable_price NUMERIC(10, 2),
+      untradable_price NUMERIC(10, 2) NOT NULL,
       quantity INT NOT NULL DEFAULT 0,
-      createdAt TIMESTAMPTZ DEFAULT NOW()
+      created_at TIMESTAMPTZ DEFAULT NOW()
     );
   `;
   }

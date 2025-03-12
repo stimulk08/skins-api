@@ -14,7 +14,7 @@ export class UserRepository {
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       name TEXT NOT NULL,
       balance NUMERIC(10, 2) NOT NULL DEFAULT 0,
-      createdAt TIMESTAMPTZ DEFAULT NOW()
+      created_at TIMESTAMPTZ DEFAULT NOW()
     );
   `;
   }
@@ -26,9 +26,16 @@ export class UserRepository {
     return response?.[0];
   }
 
-  async getAll(): Promise<UserModel[]> {
-    const response = await this.sql<UserModel[]>`SELECT * FROM users`;
-    return response;
+  async findByUsername(username: string): Promise<UserModel | null> {
+    const response = await this.sql<
+      UserModel[]
+    >`SELECT * from users WHERE name = ${username}`;
+
+    return response?.[0];
+  }
+
+  getAll(): Promise<UserModel[]> {
+    return this.sql<UserModel[]>`SELECT * FROM users`;
   }
 
   async findById(userId: string): Promise<UserModel | null> {
@@ -36,6 +43,17 @@ export class UserRepository {
     SELECT * FROM users WHERE id = ${userId}`;
 
     return response?.[0] || null;
+  }
+
+  async increaseBalance(
+    userId: string,
+    replenishmentAmount: number,
+  ): Promise<UserModel> {
+    const response = await this.sql<UserModel[]>`UPDATE users
+        SET balance = balance + ${replenishmentAmount}
+        WHERE id = ${userId}
+        RETURNING *;`;
+    return response?.[0];
   }
 }
 

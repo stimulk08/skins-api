@@ -1,18 +1,18 @@
 export class UserModel {
   id: string;
-  username: string;
-  balance: number;
-  createdAt: Date;
+  name: string;
+  balance: string;
+  created_at: Date;
 
   constructor(data: {
     id: string;
-    username: string;
-    balance: number;
+    name: string;
+    balance: string;
     createdAt: Date;
   }) {
     this.id = data.id;
-    this.username = data.username;
+    this.name = data.name;
     this.balance = data.balance;
-    this.createdAt = data.createdAt;
+    this.created_at = data.createdAt;
   }
 }

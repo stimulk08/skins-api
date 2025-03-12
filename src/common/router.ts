@@ -38,6 +38,14 @@ export class Router {
             tags: [this.tag],
           });
           break;
+        case HttpMethod.PATCH:
+          app.patch(fullPath, handler.handler, {
+            body: handler.body,
+            response: handler.response,
+            params: handler.params,
+            tags: [this.tag],
+          });
+          break;
         case HttpMethod.DELETE:
           app.delete(fullPath, handler.handler, {
             response: handler.response,
