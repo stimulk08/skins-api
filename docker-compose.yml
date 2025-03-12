@@ -8,7 +8,7 @@ services:
     environment:
       - PORT=${PORT} # Порт, на котором работает приложение
       - REDIS_URL=redis://redis:6379 # Ссылка на Redis
-      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/skins_db # Ссылка на PostgreSQL
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/skins_db
     depends_on:
       - redis
       - postgres

@@ -9,12 +9,10 @@ import { UserMapper } from '@apps/users/mappers/user.mapper';
 import { sql as sqlConnection } from '@libs/postgres/pg-connection';
 
 export class PurchaseRepository {
-  constructor(private readonly sql: postgres.Sql) {
-    this.createTable();
-  }
+  constructor(private readonly sql: postgres.Sql) {}
 
-  private async createTable(): Promise<void> {
-    await this.sql`
+  static async createTable(sql: postgres.Sql): Promise<void> {
+    await sql`
       CREATE TABLE IF NOT EXISTS purchases (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         user_id UUID REFERENCES users(id) ON DELETE SET NULL,
@@ -101,7 +99,13 @@ export class PurchaseRepository {
       throw new Error('Продукт не торгуется');
     }
 
-    return { ...product, tradablePrice, untradablePrice, quantity };
+    return {
+      ...product,
+      tradablePrice,
+      untradablePrice,
+      quantity,
+      createdAt: product.created_at,
+    };
   }
 
   async purchaseProduct(

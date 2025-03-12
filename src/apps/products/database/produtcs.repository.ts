@@ -4,20 +4,14 @@ import {
   CreateProductModelDto,
   ProductModel,
 } from '@apps/products/database/product.model';
-import { PRODUCTS_TABLE_NAME } from '@apps/products/database/produtcs.table';
 import { sql as sqlConnection } from '@libs/postgres/pg-connection';
 
 export class ProductRepository {
-  constructor(
-    private readonly sql: postgres.Sql,
-    private readonly tableName: string,
-  ) {
-    this.createTable();
-  }
+  constructor(private readonly sql: postgres.Sql) {}
 
-  private async createTable(): Promise<void> {
-    await this.sql`
-    CREATE TABLE IF NOT EXISTS ${this.sql(this.tableName)} (
+  static async createTable(sql: postgres.Sql): Promise<void> {
+    await sql`
+    CREATE TABLE IF NOT EXISTS products (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       name TEXT NOT NULL,
       tradable_price NUMERIC(10, 2),
@@ -50,7 +44,4 @@ export class ProductRepository {
   }
 }
 
-export const skinRepository = new ProductRepository(
-  sqlConnection,
-  PRODUCTS_TABLE_NAME,
-);
+export const skinRepository = new ProductRepository(sqlConnection);

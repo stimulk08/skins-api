@@ -4,12 +4,10 @@ import { UserModel } from '@apps/users/database/user.model';
 import { sql as sqlConnection } from '@libs/postgres/pg-connection';
 
 export class UserRepository {
-  constructor(private readonly sql: postgres.Sql) {
-    this.createTable();
-  }
+  constructor(private readonly sql: postgres.Sql) {}
 
-  private async createTable(): Promise<void> {
-    await this.sql`
+  static async createTable(sql: postgres.Sql): Promise<void> {
+    await sql`
     CREATE TABLE IF NOT EXISTS users (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       name TEXT NOT NULL,
